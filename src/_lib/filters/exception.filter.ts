@@ -19,18 +19,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal server error';
 
-    console.log({
-      exception,
-      response: exception.getResponse ? exception.getResponse() : null,
-    });
+    // console.log({
+    //   exception,
+    //   response: exception.getResponse ? exception.getResponse() : null,
+    // });
 
     const errorResponse: ErrorResponseDto<null> = {
-      status: 'error',
+      success: false,
       message,
       statusCode: status,
-      // error: exception.getResponse
-      //   ? exception.getResponse()
-      //   : 'Internal server error',
+      error: exception.getResponse
+        ? exception.getResponse()
+        : 'Internal server error',
     };
 
     response.status(status).json(errorResponse);

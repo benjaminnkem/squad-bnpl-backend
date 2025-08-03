@@ -122,8 +122,10 @@ export class AuthService {
 
   async verifyEmail(email: string, otp: string) {
     try {
-      const otpRecord = await this.otpRepo.findOne({
-        where: { email, otp },
+      const otpRecord = await this.otpRepo.findOneBy({
+        otp,
+        email,
+        isUsed: false,
       });
 
       if (!otpRecord) throw new BadRequestException('Invalid OTP');
@@ -140,6 +142,11 @@ export class AuthService {
 
       user.isVerified = true;
       await this.userRepo.save(user);
+
+      otpRecord.isUsed = true;
+      await this.otpRepo.save(otpRecord);
+
+      return 'Email verified successfully. You can now log in.';
     } catch (error) {
       throw new BadRequestException(
         error instanceof Error ? error.message : 'OTP verification failed',

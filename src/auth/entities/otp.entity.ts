@@ -22,6 +22,9 @@ export class Otp {
   @Column()
   expiresAt: Date;
 
+  @Column({ default: false })
+  isUsed: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

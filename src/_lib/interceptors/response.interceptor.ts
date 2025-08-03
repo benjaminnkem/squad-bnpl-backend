@@ -18,7 +18,7 @@ export class TransformResponseInterceptor<T>
   ): Observable<ResponseDto<T>> {
     return next.handle().pipe(
       map((data) => ({
-        status: 'success',
+        success: true,
         message: 'Request successful',
         data,
       })),

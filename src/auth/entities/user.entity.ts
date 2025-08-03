@@ -26,7 +26,7 @@ export class User {
   phoneNumber: string;
 
   @Column({ nullable: true })
-  profilePicture: string;
+  avatar: string;
 
   @Column({ default: false })
   isAdmin: boolean;

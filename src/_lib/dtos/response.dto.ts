@@ -1,11 +1,11 @@
 export class ResponseDto<T> {
-  status: string;
+  success: boolean;
   message: string;
   data?: T;
 }
 
 export class ErrorResponseDto<T> {
-  status: string;
+  success: boolean;
   message: string;
   statusCode: number;
   error?: any;
