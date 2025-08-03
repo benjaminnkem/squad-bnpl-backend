@@ -7,14 +7,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {
   CreateUserDto,
   ForgotPasswordDto,
   ResendOtpDto,
   ResetPasswordDto,
   VerifyEmailDto,
-} from './dto/create-user.dto';
+} from '../user/dto/user/create-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')

@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { config } from './_lib/config/enviroment.config';
 import { join } from 'path';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { join } from 'path';
         // },
       },
     }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
