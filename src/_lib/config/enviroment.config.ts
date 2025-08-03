@@ -55,7 +55,7 @@ export const config = {
     refreshSecret: value.JWT_REFRESH_SECRET,
     refreshExpiresIn: value.JWT_REFRESH_EXPIRES_IN,
   },
-  email: {
+  mail: {
     host: value.EMAIL_HOST,
     port: value.EMAIL_PORT,
     secure: Boolean(value.EMAIL_SECURE),
