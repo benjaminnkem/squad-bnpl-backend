@@ -44,6 +44,7 @@ export class AuthService {
     const { password: _, ...result } = user;
     return result;
   }
+
   async register(createUserDto: CreateUserDto) {
     try {
       const userExists = await this.userRepo.findOneBy({

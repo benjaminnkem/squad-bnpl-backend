@@ -10,6 +10,8 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { config } from './_lib/config/enviroment.config';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -40,6 +42,11 @@ import { UserModule } from './user/user.module';
       },
     }),
     UserModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
