@@ -9,6 +9,11 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @MinLength(3)
+  fullName: string;
+
+  @ApiProperty()
+  @IsString()
+  @MinLength(3)
   @IsLowercase()
   username: string;
 

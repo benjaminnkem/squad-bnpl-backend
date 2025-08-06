@@ -25,8 +25,8 @@ export class User {
   @Column({ nullable: true })
   fullName: string;
 
-  @Column({ nullable: true })
-  phoneNumber: string;
+  @Column({ nullable: true, unique: true })
+  phone: string;
 
   @Column({ nullable: true })
   dp: string;
