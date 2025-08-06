@@ -15,14 +15,7 @@ import { UploadService, ImageProcessingOptions } from './upload.service';
 import { Response } from 'express';
 import * as path from 'path';
 import { multerConfig } from 'src/_lib/config/multer.config';
-
-export class UploadDto {
-  width?: number;
-  height?: number;
-  quality?: number;
-  format?: 'jpeg' | 'png' | 'webp';
-  createThumbnail?: boolean;
-}
+import { UploadDto } from './upload.dto';
 
 type UploadResult = {
   original?: {

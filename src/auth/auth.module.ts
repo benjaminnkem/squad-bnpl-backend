@@ -7,7 +7,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { Otp } from './entities/otp.entity';
 
 @Module({
@@ -17,7 +17,7 @@ import { Otp } from './entities/otp.entity';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],

@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from 'src/user/dto/user/create-user.dto';
 import { UpdateUserDto } from 'src/user/dto/user/update-user.dto';
 import { UserService } from 'src/user/services/user/user.service';
@@ -21,8 +24,9 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findAll(@Request() req) {
+    return this.userService.getUserInfo(req.user);
   }
 
   @Get(':id')
