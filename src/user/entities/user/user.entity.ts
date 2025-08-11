@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Merchant } from '../merchant/merchant.entity';
 import { Order } from 'src/order/entities/order.entity';
+import { Cart } from 'src/cart/entities/cart.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -53,6 +54,9 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts: Cart[];
 
   @CreateDateColumn()
   createdAt: Date;

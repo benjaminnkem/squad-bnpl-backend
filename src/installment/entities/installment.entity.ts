@@ -13,8 +13,8 @@ import {
 
 @Entity({ name: 'installments' })
 export class Installment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => InstallmentPlan, (plan) => plan.installments)
   plan: InstallmentPlan;

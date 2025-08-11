@@ -8,8 +8,8 @@ import {
 
 @Entity({ name: 'payments' })
 export class Payment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;

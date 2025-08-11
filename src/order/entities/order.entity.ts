@@ -14,8 +14,8 @@ import {
 
 @Entity({ name: 'orders' })
 export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;

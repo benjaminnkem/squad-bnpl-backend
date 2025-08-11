@@ -14,8 +14,8 @@ import {
 
 @Entity({ name: 'installment_plans' })
 export class InstallmentPlan {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @OneToOne(() => Order, (order) => order.installmentPlan)
   @JoinColumn()
