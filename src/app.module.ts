@@ -15,6 +15,9 @@ import { UploadModule } from './upload/upload.module';
 import { CartModule } from './cart/cart.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { InstallmentModule } from './installment/installment.module';
+import { InstallmentPlanModule } from './installment-plan/installment-plan.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -53,6 +56,9 @@ import { OrderModule } from './order/order.module';
     CartModule,
     ProductModule,
     OrderModule,
+    InstallmentModule,
+    InstallmentPlanModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

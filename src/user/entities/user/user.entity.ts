@@ -4,11 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Merchant } from '../merchant/merchant.entity';
+import { Order } from 'src/order/entities/order.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -43,11 +45,14 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
-  @JoinColumn()
   @OneToOne(() => Merchant, (merchant) => merchant.user, {
     nullable: true,
   })
+  @JoinColumn()
   merchant: Merchant;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @CreateDateColumn()
   createdAt: Date;
