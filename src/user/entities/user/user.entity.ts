@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Merchant } from '../merchant/merchant.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -31,11 +34,20 @@ export class User {
   @Column({ nullable: true })
   dp: string;
 
+  @Column({ default: 0 })
+  creditScore: number;
+
   @Column({ default: false })
   isAdmin: boolean;
 
   @Column({ default: false })
   isVerified: boolean;
+
+  @JoinColumn()
+  @OneToOne(() => Merchant, (merchant) => merchant.user, {
+    nullable: true,
+  })
+  merchant: Merchant;
 
   @CreateDateColumn()
   createdAt: Date;
