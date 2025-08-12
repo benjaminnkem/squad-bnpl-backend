@@ -51,4 +51,10 @@ export class CartController {
   remove(@Request() req, @Param('id') id: string) {
     return this.cartService.remove(req.user.id, id);
   }
+
+  @Post('checkout')
+  @UseGuards(JwtAuthGuard)
+  checkout(@Request() req) {
+    return this.cartService.checkout(req.user.id);
+  }
 }

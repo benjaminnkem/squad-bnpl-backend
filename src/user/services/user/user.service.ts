@@ -16,9 +16,9 @@ export class UserService {
     return 'This action adds a new user';
   }
 
-  async getUserInfo(user) {
+  async getUserInfo(userId: string) {
     return await this.userRepository.findOne({
-      where: { id: user?.userId },
+      where: { id: userId },
     });
   }
 
