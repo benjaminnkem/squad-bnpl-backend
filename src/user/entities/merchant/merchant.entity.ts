@@ -13,19 +13,22 @@ export class Merchant {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   businessName: string;
 
   @Column({ unique: true })
   registrationNumber: string;
 
-  @Column({ nullable: true })
+  @Column()
+  email: string;
+
+  @Column()
   address: string;
 
-  @Column({ nullable: true })
+  @Column()
   phone: string;
 
-  @Column({ nullable: true })
+  @Column()
   photo: string;
 
   @Column({ nullable: true })
@@ -36,9 +39,6 @@ export class Merchant {
 
   @Column({ nullable: true })
   website: string;
-
-  @Column()
-  email: string;
 
   @Column({ default: false })
   isVerified: boolean;

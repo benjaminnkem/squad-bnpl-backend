@@ -5,9 +5,10 @@ import { MerchantController } from './controllers/merchant/merchant.controller';
 import { MerchantService } from './services/merchant/merchant.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user/user.entity';
+import { Merchant } from './entities/merchant/merchant.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, Merchant])],
   controllers: [UserController, MerchantController],
   providers: [UserService, MerchantService],
 })

@@ -48,9 +48,7 @@ export class UploadController {
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadDto: UploadDto,
   ) {
-    if (!file) {
-      throw new BadRequestException('No file uploaded');
-    }
+    if (!file) throw new BadRequestException('No file uploaded');
 
     try {
       const metadata = await this.uploadService.getImageMetadata(file.path);
