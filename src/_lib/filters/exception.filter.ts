@@ -19,10 +19,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal server error';
 
-    // console.log({
-    //   exception,
-    //   response: exception.getResponse ? exception.getResponse() : null,
-    // });
+    console.log({
+      exception,
+      response: exception.getResponse ? exception.getResponse() : null,
+    });
 
     const errorResponse: ErrorResponseDto<null> = {
       success: false,

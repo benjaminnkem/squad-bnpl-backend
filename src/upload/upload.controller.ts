@@ -64,9 +64,9 @@ export class UploadController {
         uploadDto.quality
       ) {
         const options: ImageProcessingOptions = {
-          width: uploadDto.width,
-          height: uploadDto.height,
-          quality: uploadDto.quality,
+          width: uploadDto.width ? Number(uploadDto.width) : undefined,
+          height: uploadDto.height ? Number(uploadDto.height) : undefined,
+          quality: uploadDto.quality ? Number(uploadDto.quality) : undefined,
           format: uploadDto.format,
         };
         processedImagePath = await this.uploadService.processImage(
@@ -81,31 +81,27 @@ export class UploadController {
       }
 
       return {
-        success: true,
-        message: 'File uploaded successfully',
-        data: {
-          original: {
-            filename: file.filename,
-            originalName: file.originalname,
-            path: file.path,
-            url: this.uploadService.getFileUrl(file.path),
-            size: file.size,
-            mimetype: file.mimetype,
-            metadata,
-          },
-          processed: processedImagePath
-            ? {
-                path: processedImagePath,
-                url: this.uploadService.getFileUrl(processedImagePath),
-              }
-            : null,
-          thumbnail: thumbnailPath
-            ? {
-                path: thumbnailPath,
-                url: this.uploadService.getFileUrl(thumbnailPath),
-              }
-            : null,
+        original: {
+          filename: file.filename,
+          originalName: file.originalname,
+          path: file.path,
+          url: this.uploadService.getFileUrl(file.path),
+          size: file.size,
+          mimetype: file.mimetype,
+          metadata,
         },
+        processed: processedImagePath
+          ? {
+              path: processedImagePath,
+              url: this.uploadService.getFileUrl(processedImagePath),
+            }
+          : null,
+        thumbnail: thumbnailPath
+          ? {
+              path: thumbnailPath,
+              url: this.uploadService.getFileUrl(thumbnailPath),
+            }
+          : null,
       };
     } catch (error) {
       // Clean up uploaded file on error
@@ -142,9 +138,9 @@ export class UploadController {
           uploadDto.quality
         ) {
           const options: ImageProcessingOptions = {
-            width: uploadDto.width,
-            height: uploadDto.height,
-            quality: uploadDto.quality,
+            width: Number(uploadDto.width),
+            height: Number(uploadDto.height),
+            quality: Number(uploadDto.quality),
             format: uploadDto.format,
           };
           processedImagePath = await this.uploadService.processImage(
@@ -188,11 +184,7 @@ export class UploadController {
       }
     }
 
-    return {
-      success: true,
-      message: 'Files processed',
-      data: results,
-    };
+    return results;
   }
 
   @Get('files/:filename')

@@ -1,30 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UploadDto {
   @ApiProperty({
-    type: 'number',
-    example: 300,
+    type: 'string',
+    example: '300',
   })
+  @IsString()
   @IsOptional()
-  @IsNumber()
-  width?: number;
+  width?: string;
 
   @ApiProperty({
-    type: 'number',
-    example: 300,
+    type: 'string',
+    example: '300',
   })
+  @IsString()
   @IsOptional()
-  @IsNumber()
-  height?: number;
+  height?: string;
 
   @ApiProperty({
-    type: 'number',
-    example: 80,
+    type: 'string',
+    example: '80',
   })
+  @IsString()
   @IsOptional()
-  @IsNumber()
-  quality?: number;
+  quality?: string;
 
   @ApiProperty({
     type: 'string',
