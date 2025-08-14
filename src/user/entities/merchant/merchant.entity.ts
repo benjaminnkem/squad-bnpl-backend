@@ -8,6 +8,12 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 
+enum MerchantStatus {
+  PENDING = 'pending',
+  VERIFIED = 'verified',
+  SUSPENDED = 'suspended',
+}
+
 @Entity({ name: 'merchants' })
 export class Merchant {
   @PrimaryGeneratedColumn('uuid')
@@ -31,6 +37,9 @@ export class Merchant {
   @Column()
   photo: string;
 
+  @Column()
+  category: string;
+
   @Column({ nullable: true })
   coverPhoto: string;
 
@@ -38,10 +47,14 @@ export class Merchant {
   bio: string;
 
   @Column({ nullable: true })
-  website: string;
+  website?: string;
 
-  @Column({ default: false })
-  isVerified: boolean;
+  @Column({
+    default: MerchantStatus.PENDING,
+    type: 'enum',
+    enum: MerchantStatus,
+  })
+  merchantStatus: MerchantStatus;
 
   @OneToMany(() => Product, (product) => product.merchant)
   products: Product[];

@@ -12,6 +12,18 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
+  @Column()
+  description: string;
+
+  @Column()
+  category: string;
+
+  @Column({ nullable: true })
+  discount?: number;
+
+  @Column({ default: 1 })
+  stock: number;
+
   @Column('text', { array: true, default: [] })
   images: string[];
 

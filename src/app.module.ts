@@ -18,6 +18,7 @@ import { OrderModule } from './order/order.module';
 import { InstallmentModule } from './installment/installment.module';
 import { InstallmentPlanModule } from './installment-plan/installment-plan.module';
 import { PaymentModule } from './payment/payment.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -26,6 +27,13 @@ import { PaymentModule } from './payment/payment.module';
     }),
     AuthModule,
     TypeOrmModule.forRoot(dataSourceOptions),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+      defaultJobOptions: { attempts: 3 },
+    }),
     MailerModule.forRoot({
       transport: {
         host: config.mail.host,
@@ -42,9 +50,6 @@ import { PaymentModule } from './payment/payment.module';
       template: {
         dir: join(process.cwd(), 'src', '_lib', 'templates'),
         adapter: new EjsAdapter(),
-        // options: {
-        //   strict: true,
-        // },
       },
     }),
     UserModule,

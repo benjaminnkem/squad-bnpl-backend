@@ -36,10 +36,12 @@ export class MerchantService {
     if (!isBusinessNameValid)
       throw new BadRequestException('Business name already exists');
 
-    const merchant = this.merchantRepository.create({
+    const payload = {
       ...data,
       user,
-    });
+    };
+
+    const merchant = this.merchantRepository.create(payload);
 
     return this.merchantRepository.save(merchant);
   }
