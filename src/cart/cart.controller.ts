@@ -21,19 +21,19 @@ export class CartController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Request() req, @Body() createCartDto: CreateCartDto) {
-    return this.cartService.create(req.user.id, createCartDto);
+    return this.cartService.addToCart(req.user?.userId, createCartDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Request() req) {
-    return this.cartService.findAll(req.user.id);
+    return this.cartService.findAll(req.user?.userId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   findOne(@Request() req, @Param('id') id: string) {
-    return this.cartService.findOne(req.user.id, id);
+    return this.cartService.findOne(req.user?.userId, id);
   }
 
   @Patch(':id')
@@ -43,18 +43,18 @@ export class CartController {
     @Param('id') id: string,
     @Body() updateCartDto: UpdateCartDto,
   ) {
-    return this.cartService.update(req.user.id, id, updateCartDto);
+    return this.cartService.update(req.user.userId, id, updateCartDto);
   }
 
-  @Delete(':id')
+  @Delete(':productId')
   @UseGuards(JwtAuthGuard)
-  remove(@Request() req, @Param('id') id: string) {
-    return this.cartService.remove(req.user.id, id);
+  remove(@Request() req, @Param('productId') productId: string) {
+    return this.cartService.remove(req.user?.userId, productId);
   }
 
   @Post('checkout')
   @UseGuards(JwtAuthGuard)
   checkout(@Request() req) {
-    return this.cartService.checkout(req.user.id);
+    return this.cartService.checkout(req.user?.userId);
   }
 }

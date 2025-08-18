@@ -31,7 +31,7 @@ export class CartService {
     private readonly paymentService: PaymentService,
   ) {}
 
-  async create(userId: string, createCartDto: CreateCartDto) {
+  async addToCart(userId: string, createCartDto: CreateCartDto) {
     const product = await this.productRepository.findOneBy({
       id: createCartDto.productId,
     });
@@ -66,8 +66,8 @@ export class CartService {
     return this.cartRepository.update({ id, userId }, updateCartDto);
   }
 
-  async remove(userId: string, id: string) {
-    return this.cartRepository.delete({ id, userId });
+  async remove(userId: string, productId: string) {
+    return this.cartRepository.delete({ productId, userId });
   }
 
   async checkout(userId: string) {
@@ -75,9 +75,17 @@ export class CartService {
       const user = await this.userRepository.findOneBy({ id: userId });
       if (!user) throw new BadRequestException('User not found');
 
-      // const cartItems = await this.findAll(userId);
+      const cartItems = await this.findAll(userId);
+      let amount = 0;
 
-      const amount = 20000;
+      for (const item of cartItems) {
+        const product = await this.productRepository.findOneBy({
+          id: item.productId,
+        });
+        if (!product) throw new BadRequestException('Product not found');
+
+        amount += product.price * item.quantity;
+      }
 
       const payload = {
         amount: amount * 100,
