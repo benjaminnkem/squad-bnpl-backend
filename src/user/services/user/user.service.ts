@@ -24,6 +24,14 @@ export class UserService {
   async getUserInfo(userId: string) {
     return await this.userRepository.findOne({
       where: { id: userId },
+      relations: ['merchant'],
+      select: {
+        merchant: {
+          id: true,
+          businessName: true,
+          merchantStatus: true,
+        },
+      },
     });
   }
 

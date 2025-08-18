@@ -20,14 +20,14 @@ export class UserController {
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.userService.updateUserInfo(userId, updateUserDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Request() req) {
-    return this.userService.getUserInfo(req.user.id);
+    return this.userService.getUserInfo(req.user.userId);
   }
 
   @Get(':id')

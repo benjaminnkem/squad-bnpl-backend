@@ -59,8 +59,6 @@ export class Merchant {
   @OneToMany(() => Product, (product) => product.merchant)
   products: Product[];
 
-  @OneToOne(() => User, (user) => user.merchant, {
-    eager: true,
-  })
+  @OneToOne(() => User, (user) => user.merchant)
   user: User;
 }

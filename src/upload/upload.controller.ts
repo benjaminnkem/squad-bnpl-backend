@@ -138,11 +138,12 @@ export class UploadController {
           uploadDto.quality
         ) {
           const options: ImageProcessingOptions = {
-            width: Number(uploadDto.width),
-            height: Number(uploadDto.height),
-            quality: Number(uploadDto.quality),
+            width: uploadDto.width ? Number(uploadDto.width) : undefined,
+            height: uploadDto.height ? Number(uploadDto.height) : undefined,
+            quality: uploadDto.quality ? Number(uploadDto.quality) : undefined,
             format: uploadDto.format,
           };
+
           processedImagePath = await this.uploadService.processImage(
             file.path,
             options,

@@ -76,15 +76,20 @@ export class UploadService {
   }
 
   async getImageMetadata(filePath: string) {
-    const metadata = await sharp(filePath).metadata();
-    return {
-      width: metadata.width,
-      height: metadata.height,
-      format: metadata.format,
-      size: metadata.size,
-      hasAlpha: metadata.hasAlpha,
-      channels: metadata.channels,
-    };
+    try {
+      const metadata = await sharp(filePath).metadata();
+      return {
+        width: metadata.width,
+        height: metadata.height,
+        format: metadata.format,
+        size: metadata.size,
+        hasAlpha: metadata.hasAlpha,
+        channels: metadata.channels,
+      };
+    } catch (error) {
+      console.log('Error getting image metadata:', error);
+      return null;
+    }
   }
 
   async deleteFile(filePath: string): Promise<void> {

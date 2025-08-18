@@ -1,5 +1,12 @@
 import { Merchant } from 'src/user/entities/merchant/merchant.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -29,4 +36,10 @@ export class Product {
 
   @ManyToOne(() => Merchant, (merchant) => merchant.products)
   merchant: Merchant;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

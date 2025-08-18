@@ -5,6 +5,7 @@ import { UpdateMerchantDto } from 'src/user/dto/merchant/update-merchant.dto';
 import { Merchant } from 'src/user/entities/merchant/merchant.entity';
 import { User } from 'src/user/entities/user/user.entity';
 import { Repository } from 'typeorm';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class MerchantService {
@@ -12,8 +13,7 @@ export class MerchantService {
     @InjectRepository(Merchant)
     private readonly merchantRepository: Repository<Merchant>,
 
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
   ) {}
 
   async validateMerchantBusinessName(businessName: string) {
@@ -27,7 +27,7 @@ export class MerchantService {
   }
 
   async becomeAMerchant(userId: string, data: CreateMerchantDto) {
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userService.getUserInfo(userId);
     if (!user) throw new BadRequestException('User not found');
 
     const isBusinessNameValid = await this.validateMerchantBusinessName(
