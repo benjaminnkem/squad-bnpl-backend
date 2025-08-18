@@ -20,8 +20,6 @@ import { InstallmentPlanModule } from './installment-plan/installment-plan.modul
 import { PaymentModule } from './payment/payment.module';
 import { BullModule } from '@nestjs/bullmq';
 
-console.log({ dataSourceOptions });
-
 @Module({
   imports: [
     ConfigModule.forRoot({

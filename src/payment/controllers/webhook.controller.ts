@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { WebhookService } from '../services/webhook.service';
 
 @Controller('payment/webhook')
-@ApiTags('payment')
+@ApiTags('Webhook')
 @ApiBearerAuth()
 export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}

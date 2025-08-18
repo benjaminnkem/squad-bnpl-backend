@@ -15,7 +15,10 @@ export class WebhookService {
 
     const { Event, Body } = req.body;
 
+    console.log({ Event, Body });
+
     if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
+      console.log('Charge successful webhook received');
       // const session = await this.transactionModel.startSession();
 
       // session.startTransaction();
