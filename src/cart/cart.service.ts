@@ -98,6 +98,13 @@ export class CartService {
           this.configService.get<string>('FRONTEND_URL') +
           '/cart?state=success',
         pass_charge: true,
+        metadata: {
+          userId: user.id,
+          cartItems: cartItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        },
       };
 
       const data = await this.paymentService.initiateTransaction(payload);
