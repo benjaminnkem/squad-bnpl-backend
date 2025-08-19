@@ -11,6 +11,8 @@ import { squadApi } from 'src/_lib/config/axios';
 import { nanoid } from 'nanoid';
 import { ApiResponse, PaymentInitResponse } from 'src/_lib/types/api.types';
 import { PaymentService } from 'src/payment/payment.service';
+import { CheckoutDto } from './dto/checkout.dto';
+import { SquadService } from 'src/payment/services/squad.service';
 
 @Injectable()
 export class CartService {
@@ -29,6 +31,8 @@ export class CartService {
     private readonly configService: ConfigService,
 
     private readonly paymentService: PaymentService,
+
+    private readonly squadService: SquadService,
   ) {}
 
   async addToCart(userId: string, createCartDto: CreateCartDto) {
@@ -38,7 +42,7 @@ export class CartService {
     if (!product) throw new BadRequestException('Product not found');
 
     const existingCartItem = await this.cartRepository.findOne({
-      where: { productId: createCartDto.productId, userId: userId },
+      where: { product: { id: product.id }, userId: userId },
     });
 
     if (existingCartItem)
@@ -50,12 +54,28 @@ export class CartService {
     const cart = this.cartRepository.create({
       ...createCartDto,
       user,
+      product,
     });
     return this.cartRepository.save(cart);
   }
 
   async findAll(userId: string) {
-    return this.cartRepository.find({ where: { userId } });
+    return this.cartRepository.find({
+      where: { userId },
+      relations: {
+        user: { merchant: true },
+        product: true,
+      },
+      select: {
+        product: {
+          id: true,
+          images: true,
+          name: true,
+          price: true,
+          discount: true,
+        },
+      },
+    });
   }
 
   async findOne(userId: string, id: string) {
@@ -67,20 +87,31 @@ export class CartService {
   }
 
   async remove(userId: string, productId: string) {
-    return this.cartRepository.delete({ productId, userId });
+    return this.cartRepository.delete({ product: { id: productId }, userId });
   }
 
-  async checkout(userId: string) {
+  async checkout(userId: string, checkoutDto: CheckoutDto) {
     try {
       const user = await this.userRepository.findOneBy({ id: userId });
       if (!user) throw new BadRequestException('User not found');
 
       const cartItems = await this.findAll(userId);
+
       let amount = 0;
+
+      const merchantGroups = cartItems.reduce(
+        (groups, item) => {
+          const merchantId = item.product.merchant.id;
+          if (!groups[merchantId]) groups[merchantId] = [];
+          groups[merchantId].push(item);
+          return groups;
+        },
+        {} as Record<string, Cart[]>,
+      );
 
       for (const item of cartItems) {
         const product = await this.productRepository.findOneBy({
-          id: item.productId,
+          id: item.product.id,
         });
         if (!product) throw new BadRequestException('Product not found');
 
@@ -100,14 +131,15 @@ export class CartService {
         pass_charge: true,
         metadata: {
           userId: user.id,
+          plan: checkoutDto.paymentPlan,
           cartItems: cartItems.map((item) => ({
-            productId: item.productId,
+            productId: item.product.id,
             quantity: item.quantity,
           })),
         },
       };
 
-      const data = await this.paymentService.initiateTransaction(payload);
+      const data = await this.squadService.initiateTransaction(payload);
 
       return data;
     } catch (error) {

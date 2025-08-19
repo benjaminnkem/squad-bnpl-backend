@@ -1,5 +1,12 @@
+import { Product } from 'src/product/entities/product.entity';
 import { User } from 'src/user/entities/user/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'carts' })
 export class Cart {
@@ -9,8 +16,8 @@ export class Cart {
   @Column()
   userId: string;
 
-  @Column()
-  productId: string;
+  @ManyToOne(() => Product, (product) => product.carts)
+  product: Product;
 
   @Column({ default: 1 })
   quantity: number;

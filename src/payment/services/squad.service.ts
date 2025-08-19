@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { InitiateTransactionDto } from '../dto/create-payment.dto';
 
 @Injectable()
-export class PaymentService {
+export class SquadService {
   constructor(private readonly configService: ConfigService) {}
 
   async initiateTransaction(payload: InitiateTransactionDto) {

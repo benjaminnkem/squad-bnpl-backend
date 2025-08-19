@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Payment } from 'src/payment/entities/payment.entity';
 
 enum MerchantStatus {
   PENDING = 'pending',
@@ -58,6 +59,9 @@ export class Merchant {
 
   @OneToMany(() => Product, (product) => product.merchant)
   products: Product[];
+
+  @OneToMany(() => Payment, (payment) => payment.merchant)
+  payments: Payment[];
 
   @OneToOne(() => User, (user) => user.merchant)
   user: User;

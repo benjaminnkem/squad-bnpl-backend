@@ -13,6 +13,7 @@ import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CheckoutDto } from './dto/checkout.dto';
 
 @Controller('cart')
 export class CartController {
@@ -54,7 +55,7 @@ export class CartController {
 
   @Post('checkout')
   @UseGuards(JwtAuthGuard)
-  checkout(@Request() req) {
-    return this.cartService.checkout(req.user?.userId);
+  checkout(@Request() req, @Body() checkoutDto: CheckoutDto) {
+    return this.cartService.checkout(req.user?.userId, checkoutDto);
   }
 }

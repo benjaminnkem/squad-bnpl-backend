@@ -12,6 +12,7 @@ import {
 import { Merchant } from '../merchant/merchant.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
+import { Payment } from 'src/payment/entities/payment.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -57,6 +58,9 @@ export class User {
 
   @OneToMany(() => Cart, (cart) => cart.user)
   carts: Cart[];
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments: Payment[];
 
   @CreateDateColumn()
   createdAt: Date;

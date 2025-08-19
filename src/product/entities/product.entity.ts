@@ -1,9 +1,11 @@
+import { Cart } from 'src/cart/entities/cart.entity';
 import { Merchant } from 'src/user/entities/merchant/merchant.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -36,6 +38,9 @@ export class Product {
 
   @ManyToOne(() => Merchant, (merchant) => merchant.products)
   merchant: Merchant;
+
+  @OneToMany(() => Cart, (cart) => cart.product)
+  carts: Cart;
 
   @UpdateDateColumn()
   updatedAt: Date;

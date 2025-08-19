@@ -6,8 +6,21 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { PaymentDirection, PaymentPurpose, SquadPaymentMethod } from '../enums';
 
-export class CreatePaymentDto {}
+export class CreatePaymentDto {
+  @IsNumber()
+  amount: number;
+
+  @IsEnum(SquadPaymentMethod)
+  method: SquadPaymentMethod;
+
+  @IsEnum(PaymentDirection)
+  direction: PaymentDirection;
+
+  @IsEnum(PaymentPurpose)
+  purpose: PaymentPurpose;
+}
 
 export class InitiateTransactionDto {
   @IsNumber()

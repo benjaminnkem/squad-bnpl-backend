@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { PaymentStatus, WebhookEvent } from '../enums';
-import { PaymentService } from '../payment.service';
+import { SquadService } from './squad.service';
 
 @Injectable()
 export class WebhookService {
-  constructor(private squadProvider: PaymentService) {}
+  constructor(private squadProvider: SquadService) {}
 
   async processSquadWebhook(req: Request) {
     this.squadProvider.verifyWebhookSignal(

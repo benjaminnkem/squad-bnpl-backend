@@ -20,27 +20,17 @@ export enum WebhookEvent {
   CHARGE_SUCCESSFUL = 'charge_successful',
 }
 
-export enum ExpensesType {
-  PERIODIC = 'PERIODIC',
-  ONE_OFF = 'ONE_OFF',
-  RECORD = 'RECORD',
-}
-
-export enum ExpenseFrequency {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  BI_WEEKLY = 'BI_WEEKLY',
-  MONTHLY = 'MOTHLY',
-  BI_MONTHLY = 'BI_MONTHLY',
-  QUATERLY = 'QUATERLY',
-  YEARLY = 'YEARLY',
-}
-
-export enum ExpenseStatus {
-  ACTIVE = 'ACTIVE',
-  DELETED = 'DELETED',
-  PAID = 'PAID',
-  PAYOUT_FAILED = 'PAYOUT_FAILED',
-}
-
 export type TransferStatus = 'failed' | 'reversed' | 'successful';
+
+export enum SquadPaymentMethod {
+  CARD = 'card',
+  BANK_TRANSFER = 'bank_transfer',
+  WALLET = 'wallet',
+}
+
+export enum PayoutPlan {
+  IN_FULL = 'IN_FULL',
+  IN_4 = 'IN_4',
+  IN_3 = 'IN_3',
+  PAY_LATER = 'IN_LATER',
+}

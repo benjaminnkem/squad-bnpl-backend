@@ -2,9 +2,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import {
+  PaymentDirection,
+  PaymentPurpose,
+  PaymentStatus,
+  SquadPaymentMethod,
+} from '../enums';
+import { User } from 'src/user/entities/user/user.entity';
+import { Merchant } from 'src/user/entities/merchant/merchant.entity';
 
 @Entity({ name: 'payments' })
 export class Payment {
@@ -17,11 +26,31 @@ export class Payment {
   @Column()
   paymentDate: Date;
 
-  @Column()
-  method: 'card' | 'bank_transfer' | 'wallet';
+  @Column({
+    type: 'enum',
+    enum: SquadPaymentMethod,
+    default: SquadPaymentMethod.CARD,
+  })
+  method: SquadPaymentMethod;
 
-  @Column({ default: 'successful' })
-  status: 'successful' | 'failed';
+  @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
+  status: PaymentStatus;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentDirection,
+    default: PaymentDirection.INFLOW,
+  })
+  direction: PaymentDirection;
+
+  @Column({ type: 'enum', enum: PaymentPurpose, default: PaymentPurpose.ORDER })
+  purpose: PaymentPurpose;
+
+  @ManyToOne(() => User, (user) => user.payments)
+  user: User;
+
+  @ManyToOne(() => Merchant, (merchant) => merchant.payments)
+  merchant: Merchant;
 
   @CreateDateColumn()
   createdAt: Date;
