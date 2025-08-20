@@ -13,7 +13,6 @@ import {
 import { CartService } from './cart.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CheckoutDto } from './dto/checkout.dto';
 import { AddToCartDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 

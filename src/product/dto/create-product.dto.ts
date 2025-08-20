@@ -39,7 +39,7 @@ export class CreateProductDto {
     type: 'number',
     description: 'The stock quantity of the product',
   })
-  stock: number;
+  stockQuantity: number;
 
   @IsNumber()
   @IsPositive()

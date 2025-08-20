@@ -1,15 +1,3 @@
-// import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-// import { CreateCartDto } from './dto/create-cart.dto';
-// import { UpdateCartDto } from './dto/update-cart.dto';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Cart } from './entities/cart.entity';
-// import { Repository } from 'typeorm';
-// import { Product } from 'src/product/entities/product.entity';
-// import { User } from 'src/user/entities/user/user.entity';
-// import { CheckoutDto } from './dto/checkout.dto';
-// import { Order } from 'src/order/entities/order.entity';
-// import { OrderService } from 'src/order/order.service';
-
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -27,161 +15,6 @@ import {
 } from './exceptions/cart.exceptions';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { AddToCartDto } from './dto/create-cart.dto';
-
-// @Injectable()
-// export class CartService {
-//   private readonly logger = new Logger(CartService.name);
-
-//   constructor(
-//     @InjectRepository(Cart)
-//     private readonly cartRepository: Repository<Cart>,
-
-//     @InjectRepository(Product)
-//     private readonly productRepository: Repository<Product>,
-
-//     @InjectRepository(User)
-//     private readonly userRepository: Repository<User>,
-
-//     private readonly orderService: OrderService,
-//   ) {}
-
-//   async addToCart(userId: string, createCartDto: CreateCartDto) {
-//     const product = await this.productRepository.findOneBy({
-//       id: createCartDto.productId,
-//     });
-//     if (!product) throw new BadRequestException('Product not found');
-
-//     const existingCartItem = await this.cartRepository.findOne({
-//       where: { product: { id: product.id }, userId: userId },
-//     });
-
-//     if (existingCartItem)
-//       throw new BadRequestException('Product already in cart');
-
-//     const user = await this.userRepository.findOneBy({ id: userId });
-//     if (!user) throw new BadRequestException('User not found');
-
-//     const cart = this.cartRepository.create({
-//       ...createCartDto,
-//       user,
-//       product,
-//     });
-//     return this.cartRepository.save(cart);
-//   }
-
-//   async findAll(userId: string) {
-//     return this.cartRepository.find({
-//       where: { userId },
-//       relations: {
-//         product: {
-//           merchant: true,
-//         },
-//       },
-//       select: {
-//         product: {
-//           id: true,
-//           images: true,
-//           name: true,
-//           price: true,
-//           discount: true,
-//           merchant: {
-//             id: true,
-//           },
-//         },
-//         user: {
-//           merchant: {
-//             id: true,
-//           },
-//         },
-//       },
-//     });
-//   }
-
-//   async findOne(userId: string, id: string) {
-//     return this.cartRepository.findOne({ where: { id, userId } });
-//   }
-
-//   async update(userId: string, id: string, updateCartDto: UpdateCartDto) {
-//     return this.cartRepository.update({ id, userId }, updateCartDto);
-//   }
-
-//   async remove(userId: string, productId: string) {
-//     return this.cartRepository.delete({ product: { id: productId }, userId });
-//   }
-
-//   async checkout(userId: string, checkoutDto: CheckoutDto) {
-//     try {
-//       const user = await this.userRepository.findOneBy({ id: userId });
-//       if (!user) throw new BadRequestException('User not found');
-
-//       const cartItems = await this.findAll(userId);
-
-//       let amount = 0;
-
-//       const merchantGroups = cartItems.reduce(
-//         (groups, item) => {
-//           const merchantId = item.product.merchant.id;
-//           if (!groups[merchantId]) groups[merchantId] = [];
-//           groups[merchantId].push(item);
-//           return groups;
-//         },
-//         {} as Record<string, Cart[]>,
-//       );
-
-//       const orders: Order[] = [];
-
-//       for (const [merchantId, items] of Object.entries(merchantGroups)) {
-//         const total = items.reduce(
-//           (sum, i) => sum + i.product.price * i.quantity,
-//           0,
-//         );
-
-//         const order = await this.orderService.create({
-//           userId,
-//           merchantId,
-//           items,
-//           total,
-//           status: 'PENDING',
-//         });
-
-//         orders.push(order);
-//       }
-
-//       throw new BadRequestException('Cart is empty');
-
-//       // const payload = {
-//       //   amount: amount * 100,
-//       //   email: user.email,
-//       //   currency: 'NGN',
-//       //   initiate_type: 'inline',
-//       //   customer_name: user.fullName,
-//       //   transaction_ref: `txn_${nanoid(10)}`,
-//       //   callback_url:
-//       //     this.configService.get<string>('FRONTEND_URL') +
-//       //     '/cart?state=success',
-//       //   pass_charge: true,
-//       //   metadata: {
-//       //     userId: user.id,
-//       //     plan: checkoutDto.paymentPlan,
-//       //     cartItems: cartItems.map((item) => ({
-//       //       productId: item.product.id,
-//       //       quantity: item.quantity,
-//       //     })),
-//       //   },
-//       // };
-
-//       // const data = await this.squadService.initiateTransaction(payload);
-
-//       // return data;
-//     } catch (error) {
-//       this.logger.error(
-//         'Checkout failed',
-//         error?.response?.data || error.message,
-//       );
-//       throw new BadRequestException('Checkout failed');
-//     }
-//   }
-// }
 
 @Injectable()
 export class CartService {
@@ -247,9 +80,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Add product to cart
-   */
   async addToCart(userId: string, addToCartDto: AddToCartDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -287,13 +117,11 @@ export class CartService {
         throw new CartItemAlreadyExistsException();
       }
 
-      // Calculate prices
       const unitPrice = product.discount
-        ? product.price * (1 - product.discount)
+        ? product.price - product.price * (product.discount / 100)
         : product.price;
       const totalPrice = unitPrice * quantity;
 
-      // Create cart item
       const cartItem = queryRunner.manager.create(CartItem, {
         cartId: cart.id,
         productId,
@@ -304,14 +132,12 @@ export class CartService {
 
       await queryRunner.manager.save(CartItem, cartItem);
 
-      // Update cart total
       await this.recalculateCartTotal(cart.id, queryRunner.manager);
 
       await queryRunner.commitTransaction();
 
       this.logger.log(`Added product ${productId} to cart ${cart.id}`);
 
-      // Return updated cart
       return await this.getUserCart(userId);
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -322,9 +148,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Update cart item quantity
-   */
   async updateCartItem(
     userId: string,
     cartItemId: string,
@@ -373,9 +196,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Remove item from cart
-   */
   async removeCartItem(userId: string, cartItemId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -411,9 +231,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Clear entire cart
-   */
   async clearCart(userId: string): Promise<{ message: string }> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -450,9 +267,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Get cart items count
-   */
   async getCartItemsCount(userId: string): Promise<{ count: number }> {
     try {
       const cart = await this.cartRepository.findOne({
@@ -476,9 +290,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Validate cart for checkout
-   */
   async validateCartForCheckout(userId: string) {
     try {
       const cart = await this.getOrCreateCart(userId);
@@ -525,9 +336,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Mark cart as converted (after successful checkout)
-   */
   async markCartAsConverted(userId: string): Promise<void> {
     try {
       await this.cartRepository.update(
@@ -550,9 +358,6 @@ export class CartService {
     }
   }
 
-  /**
-   * Recalculate cart total amount
-   */
   private async recalculateCartTotal(cartId: string, manager: EntityManager) {
     const cartItems = await manager.find(CartItem, {
       where: { cartId },
@@ -566,9 +371,6 @@ export class CartService {
     await manager.update(Cart, cartId, { totalAmount });
   }
 
-  /**
-   * Map cart entity to response DTO
-   */
   private mapToCartResponse(cart: Cart) {
     return {
       id: cart.id,
