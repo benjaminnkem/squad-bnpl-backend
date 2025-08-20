@@ -8,12 +8,14 @@ import {
   Delete,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CheckoutDto } from './dto/checkout.dto';
+import { AddToCartDto } from './dto/create-cart.dto';
+import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
 @Controller('cart')
 export class CartController {
@@ -21,41 +23,51 @@ export class CartController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Request() req, @Body() createCartDto: CreateCartDto) {
+  create(@Request() req, @Body() createCartDto: AddToCartDto) {
     return this.cartService.addToCart(req.user?.userId, createCartDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Request() req) {
-    return this.cartService.findAll(req.user?.userId);
+    return this.cartService.getOrCreateCart(req.user?.userId);
   }
 
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  findOne(@Request() req, @Param('id') id: string) {
-    return this.cartService.findOne(req.user?.userId, id);
-  }
-
-  @Patch(':id')
+  @Put('items/:id')
   @UseGuards(JwtAuthGuard)
   update(
     @Request() req,
     @Param('id') id: string,
+    @Body() updateCartDto: UpdateCartItemDto,
+  ) {
+    return this.cartService.updateCartItem(req.user.userId, id, updateCartDto);
+  }
+
+  @Put('items/:id')
+  @UseGuards(JwtAuthGuard)
+  removeItem(
+    @Request() req,
+    @Param('id') id: string,
     @Body() updateCartDto: UpdateCartDto,
   ) {
-    return this.cartService.update(req.user.userId, id, updateCartDto);
+    return this.cartService.removeCartItem(req.user.userId, id);
   }
 
-  @Delete(':productId')
+  @Delete()
   @UseGuards(JwtAuthGuard)
-  remove(@Request() req, @Param('productId') productId: string) {
-    return this.cartService.remove(req.user?.userId, productId);
+  remove(@Request() req) {
+    return this.cartService.clearCart(req.user?.userId);
   }
 
-  @Post('checkout')
+  @Get('count')
   @UseGuards(JwtAuthGuard)
-  checkout(@Request() req, @Body() checkoutDto: CheckoutDto) {
-    return this.cartService.checkout(req.user?.userId, checkoutDto);
+  getCount(@Request() req) {
+    return this.cartService.getCartItemsCount(req.user?.userId);
+  }
+
+  @Post('validate')
+  @UseGuards(JwtAuthGuard)
+  validateCart(@Request() req) {
+    return this.cartService.validateCartForCheckout(req.user?.userId);
   }
 }

@@ -19,6 +19,9 @@ import { InstallmentModule } from './installment/installment.module';
 import { InstallmentPlanModule } from './installment-plan/installment-plan.module';
 import { PaymentModule } from './payment/payment.module';
 import { BullModule } from '@nestjs/bullmq';
+import { DeliveryModule } from './delivery/delivery.module';
+import { NotificationModule } from './notification/notification.module';
+import { WarehouseModule } from './warehouse/warehouse.module';
 
 @Module({
   imports: [
@@ -64,6 +67,9 @@ import { BullModule } from '@nestjs/bullmq';
     InstallmentModule,
     InstallmentPlanModule,
     PaymentModule,
+    DeliveryModule,
+    NotificationModule,
+    WarehouseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,36 +1,54 @@
 import { InstallmentPlan } from 'src/installment-plan/entities/installment-plan.entity';
-import { Payment } from 'src/payment/entities/payment.entity';
 import {
+  Entity,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { InstallmentStatus } from '../enums';
 
-@Entity({ name: 'installments' })
+@Entity('installments')
 export class Installment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => InstallmentPlan, (plan) => plan.installments)
-  plan: InstallmentPlan;
+  @Column({ type: 'int' })
+  installmentNumber: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  amount: number;
 
   @Column()
   dueDate: Date;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount: number;
+  @Column({ nullable: true })
+  paidDate: Date;
 
-  @Column({ default: false })
-  paid: boolean;
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  paidAmount: number;
 
-  @OneToOne(() => Payment, { nullable: true })
-  @JoinColumn()
-  payment: Payment;
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  lateFee: number;
+
+  @Column({
+    type: 'enum',
+    enum: InstallmentStatus,
+    default: InstallmentStatus.PENDING,
+  })
+  status: InstallmentStatus;
+
+  @Column({ nullable: true })
+  paymentReference: string;
+
+  @ManyToOne(() => InstallmentPlan, (plan) => plan.installments)
+  @JoinColumn({ name: 'installmentPlanId' })
+  installmentPlan: InstallmentPlan;
+
+  @Column()
+  installmentPlanId: string;
 
   @CreateDateColumn()
   createdAt: Date;

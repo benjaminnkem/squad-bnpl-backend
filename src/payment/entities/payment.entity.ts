@@ -1,56 +1,72 @@
 import {
+  Entity,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import {
-  PaymentDirection,
-  PaymentPurpose,
-  PaymentStatus,
-  SquadPaymentMethod,
-} from '../enums';
+import { PaymentMethod, PaymentPurpose, PaymentStatus } from '../enums';
 import { User } from 'src/user/entities/user/user.entity';
-import { Merchant } from 'src/user/entities/merchant/merchant.entity';
+import { Order } from 'src/order/entities/order.entity';
 
-@Entity({ name: 'payments' })
+@Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column({ unique: true })
+  reference: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
+  @Column({ nullable: true })
+  gatewayReference: string;
+
+  @Column({ nullable: true })
+  gatewayResponse: string;
+
+  @Column({ nullable: true })
+  failureReason: string;
+
+  @Column({ nullable: true })
+  paidAt: Date;
+
+  @ManyToOne(() => User, (user) => user.payments)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
   @Column()
-  paymentDate: Date;
+  userId: string;
+
+  @ManyToOne(() => Order, (order) => order.payments)
+  @JoinColumn({ name: 'orderId' })
+  order: Order;
+
+  @Column()
+  orderId: string;
 
   @Column({
     type: 'enum',
-    enum: SquadPaymentMethod,
-    default: SquadPaymentMethod.CARD,
+    enum: PaymentStatus,
+    default: PaymentStatus.PENDING,
   })
-  method: SquadPaymentMethod;
-
-  @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
   status: PaymentStatus;
 
   @Column({
     type: 'enum',
-    enum: PaymentDirection,
-    default: PaymentDirection.INFLOW,
+    enum: PaymentMethod,
   })
-  direction: PaymentDirection;
+  paymentMethod: PaymentMethod;
 
-  @Column({ type: 'enum', enum: PaymentPurpose, default: PaymentPurpose.ORDER })
+  @Column({
+    type: 'enum',
+    enum: PaymentPurpose,
+    default: PaymentPurpose.ORDER_PAYMENT,
+  })
   purpose: PaymentPurpose;
-
-  @ManyToOne(() => User, (user) => user.payments)
-  user: User;
-
-  @ManyToOne(() => Merchant, (merchant) => merchant.payments)
-  merchant: Merchant;
 
   @CreateDateColumn()
   createdAt: Date;

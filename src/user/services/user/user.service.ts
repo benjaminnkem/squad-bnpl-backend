@@ -29,7 +29,7 @@ export class UserService {
         merchant: {
           id: true,
           businessName: true,
-          merchantStatus: true,
+          status: true,
         },
       },
     });

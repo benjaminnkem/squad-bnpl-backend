@@ -8,12 +8,8 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
-
-enum MerchantStatus {
-  PENDING = 'pending',
-  VERIFIED = 'verified',
-  SUSPENDED = 'suspended',
-}
+import { MerchantStatus, MerchantTier } from 'src/user/enums';
+import { Order } from 'src/order/entities/order.entity';
 
 @Entity({ name: 'merchants' })
 export class Merchant {
@@ -51,17 +47,54 @@ export class Merchant {
   website?: string;
 
   @Column({
-    default: MerchantStatus.PENDING,
     type: 'enum',
     enum: MerchantStatus,
+    default: MerchantStatus.PENDING_APPROVAL,
   })
-  merchantStatus: MerchantStatus;
+  status: MerchantStatus;
+
+  @Column({
+    type: 'enum',
+    enum: MerchantTier,
+    default: MerchantTier.BASIC,
+  })
+  tier: MerchantTier;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2, default: 3.5 })
+  serviceFeePct: number; // 3-5% service fee
+
+  @Column({ nullable: true })
+  cacNumber: string;
+
+  @Column({ nullable: true })
+  businessAddress: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  bankName: string;
+
+  @Column({ nullable: true })
+  bankAccountNumber: string;
+
+  @Column({ nullable: true })
+  bankAccountName: string;
+
+  @Column({ default: true })
+  autoSettlement: boolean;
+
+  @Column({ type: 'int', default: 1 }) // Settlement frequency in days
+  settlementFrequency: number;
 
   @OneToMany(() => Product, (product) => product.merchant)
   products: Product[];
 
-  @OneToMany(() => Payment, (payment) => payment.merchant)
-  payments: Payment[];
+  @OneToMany(() => Order, (order) => order.merchant)
+  orders: Order[];
 
   @OneToOne(() => User, (user) => user.merchant)
   user: User;

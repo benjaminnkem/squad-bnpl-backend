@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
@@ -8,6 +9,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { ProductCategory } from '../enums';
 
 export class CreateProductDto {
   @IsString()
@@ -28,9 +30,9 @@ export class CreateProductDto {
   })
   description: string;
 
-  @IsString()
+  @IsEnum(ProductCategory)
   @ApiProperty({ type: 'string', description: 'The category of the product' })
-  category: string;
+  category: ProductCategory;
 
   @IsNumber()
   @ApiProperty({
