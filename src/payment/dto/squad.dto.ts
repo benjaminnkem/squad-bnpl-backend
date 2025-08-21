@@ -51,3 +51,44 @@ export interface SquadTransactionResponse {
   };
   message: string;
 }
+
+export class VerifyTransaction {
+  @IsNumber()
+  transaction_amount: number;
+
+  @IsString()
+  transaction_ref: string;
+
+  @IsString()
+  email: string;
+
+  @IsString()
+  transaction_status: string;
+
+  @IsString()
+  transaction_currency_id: string;
+
+  @IsString()
+  created_at: string;
+
+  @IsString()
+  transaction_type: string;
+
+  @IsString()
+  merchant_name: string;
+
+  @IsString()
+  merchant_business_name: string | null;
+
+  @IsString()
+  gateway_transaction_ref: string;
+
+  @IsString()
+  recurring: string | null;
+
+  @IsString()
+  merchant_email: string;
+
+  @IsString()
+  plan_code: string | null;
+}

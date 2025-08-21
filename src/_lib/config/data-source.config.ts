@@ -1,6 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from './enviroment.config';
-import * as path from 'path';
+import { join } from 'path';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
@@ -10,7 +10,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: config.database.password,
   database: config.database.name,
   synchronize: config.database.synchronize,
-  entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
+  entities: [join(__dirname, '../../**/*.entity{.ts,.js}')],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   ...(config.nodeEnv === 'development'
     ? {}

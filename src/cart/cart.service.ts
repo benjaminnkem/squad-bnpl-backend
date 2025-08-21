@@ -518,8 +518,6 @@ export class CartService {
 
       // Return response
       return {
-        success: true,
-        message: 'Checkout initiated successfully',
         orderId: order.id,
         orderNumber: order.orderNumber,
         checkoutType: checkoutDto.checkoutType,

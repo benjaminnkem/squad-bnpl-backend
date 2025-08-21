@@ -14,4 +14,11 @@ import { UpdatePaymentDto } from '../dto/update-payment.dto';
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
+
+  @Get('verify/:transactionReference')
+  async verifyPayment(
+    @Param('transactionReference') transactionReference: string,
+  ) {
+    return this.paymentService.verifyPayment(transactionReference);
+  }
 }

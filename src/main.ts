@@ -9,7 +9,7 @@ import {
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import * as express from 'express';
+import { json, urlencoded } from 'express';
 import { TransformResponseInterceptor } from './_lib/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './_lib/filters/exception.filter';
 import { config } from './_lib/config/enviroment.config';
@@ -38,8 +38,8 @@ async function bootstrap() {
 
   app.use(helmet());
   app.setGlobalPrefix('api');
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: false, limit: '50mb' }));
   app.disable('x-powered-by');
 
   app.enableVersioning({

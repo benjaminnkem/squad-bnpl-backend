@@ -39,16 +39,14 @@ import { WarehouseModule } from './warehouse/warehouse.module';
     }),
     MailerModule.forRoot({
       transport: {
-        host: config.mail.host,
-        port: config.mail.port,
-        secure: config.mail.secure,
+        service: 'gmail',
         auth: {
           user: config.mail.user,
           pass: config.mail.pass,
         },
       },
       defaults: {
-        from: '"Squad BNPL Team" <noreply@squadbnpl.com>',
+        from: '"SmartPay Team" <noreply@smartpay.com>',
       },
       template: {
         dir: join(process.cwd(), 'src', '_lib', 'templates'),

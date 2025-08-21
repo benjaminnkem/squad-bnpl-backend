@@ -13,7 +13,7 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService, ImageProcessingOptions } from './upload.service';
 import { Response } from 'express';
-import * as path from 'path';
+import { join, resolve } from 'path';
 import { multerConfig } from 'src/_lib/config/multer.config';
 import { UploadDto } from './upload.dto';
 
@@ -190,8 +190,8 @@ export class UploadController {
 
   @Get('files/:filename')
   async serveFile(@Param('filename') filename: string, @Res() res: Response) {
-    const filePath = path.join('./uploads', filename);
-    return res.sendFile(path.resolve(filePath));
+    const filePath = join('./uploads', filename);
+    return res.sendFile(resolve(filePath));
   }
 
   @Get('processed/:filename')
@@ -199,7 +199,7 @@ export class UploadController {
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
-    const filePath = path.join('./uploads/processed', filename);
-    return res.sendFile(path.resolve(filePath));
+    const filePath = join('./uploads/processed', filename);
+    return res.sendFile(resolve(filePath));
   }
 }
