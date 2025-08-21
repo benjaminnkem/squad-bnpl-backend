@@ -7,21 +7,26 @@ import { squadApi } from 'src/_lib/config/axios';
 import { ApiResponse, PaymentInitResponse } from 'src/_lib/types/api.types';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import { InitiateTransactionDto } from '../dto/create-payment.dto';
+import { InitiateTransactionDto } from '../dto/squad.dto';
 
 @Injectable()
 export class SquadService {
   constructor(private readonly configService: ConfigService) {}
 
   async initiateTransaction(payload: InitiateTransactionDto) {
-    const {
-      data: { data },
-    } = await squadApi.post<ApiResponse<PaymentInitResponse>>(
-      '/transaction/initiate',
-      payload,
-    );
+    try {
+      const {
+        data: { data },
+      } = await squadApi.post<ApiResponse<PaymentInitResponse>>(
+        '/transaction/initiate',
+        payload,
+      );
 
-    return data;
+      return data;
+    } catch (error) {
+      console.error('Error initiating transaction:', error.message);
+      throw error;
+    }
   }
 
   verifyWebhookSignal(encryptedBody: string, body: any) {

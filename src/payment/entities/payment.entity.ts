@@ -31,8 +31,8 @@ export class Payment {
   @Column({ nullable: true })
   failureReason: string;
 
-  @Column({ nullable: true })
-  paidAt: Date;
+  @Column({ nullable: true, type: 'timestamp' })
+  paidAt: Date | null;
 
   @ManyToOne(() => User, (user) => user.payments)
   @JoinColumn({ name: 'userId' })

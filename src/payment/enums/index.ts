@@ -49,3 +49,14 @@ export enum PaymentPurpose {
   INSTALLMENT_PAYMENT = 'installment_payment',
   LATE_FEE_PAYMENT = 'late_fee_payment',
 }
+
+export enum Currency {
+  NGN = 'NGN',
+  USD = 'USD',
+  EUR = 'EUR',
+}
+
+export enum InitiateType {
+  INLINE = 'inline',
+  REDIRECT = 'redirect',
+}

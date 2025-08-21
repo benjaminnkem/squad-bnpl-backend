@@ -13,6 +13,7 @@ import { Merchant } from '../merchant/merchant.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
+import { UserStatus } from 'src/user/enums';
 
 @Entity({ name: 'users' })
 export class User {
@@ -29,8 +30,11 @@ export class User {
   @Exclude()
   password: string;
 
-  @Column({ nullable: true })
-  fullName: string;
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column({ nullable: true, unique: true })
   phone: string;
@@ -38,8 +42,38 @@ export class User {
   @Column({ nullable: true })
   dp: string;
 
-  @Column({ default: 0 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 50000 })
+  bnplLimit: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  availableLimit: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  usedLimit: number;
+
+  @Column({ type: 'int', default: 0 })
   creditScore: number;
+
+  @Column({ nullable: true })
+  bvn: string;
+
+  @Column({ nullable: true })
+  nin: string;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  referralCode: string;
+
+  @Column({ nullable: true })
+  referredBy: string;
 
   @Column({ default: false })
   isAdmin: boolean;
@@ -58,6 +92,13 @@ export class User {
 
   @OneToMany(() => Cart, (cart) => cart.user)
   carts: Cart[];
+
+  @Column({
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.PENDING_VERIFICATION,
+  })
+  status: UserStatus;
 
   @OneToMany(() => Payment, (payment) => payment.user)
   payments: Payment[];
