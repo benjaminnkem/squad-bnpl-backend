@@ -30,13 +30,13 @@ import { WarehouseModule } from './warehouse/warehouse.module';
     }),
     AuthModule,
     TypeOrmModule.forRoot(dataSourceOptions),
-    BullModule.forRoot({
-      connection: {
-        host: 'localhost',
-        port: 6379,
-      },
-      defaultJobOptions: { attempts: 3 },
-    }),
+    // BullModule.forRoot({
+    //   connection: {
+    //     host: 'localhost',
+    //     port: 6379,
+    //   },
+    //   defaultJobOptions: { attempts: 3 },
+    // }),
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
