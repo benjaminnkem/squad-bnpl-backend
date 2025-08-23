@@ -43,7 +43,7 @@ export class WalletService {
     const wallet = await this.getOrCreate(merchantId);
     if (!wallet) throw new UnauthorizedException('Wallet not found');
 
-    wallet.balance += amount;
+    wallet.balance = Number(wallet.balance) + Number(amount);
     await queryRunner.manager.save(wallet);
     return wallet;
   }
