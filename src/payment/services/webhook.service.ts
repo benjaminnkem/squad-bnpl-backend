@@ -24,8 +24,6 @@ export class WebhookService {
 
     const { Event, Body } = req.body;
 
-    console.log({ Event, Body });
-
     if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();

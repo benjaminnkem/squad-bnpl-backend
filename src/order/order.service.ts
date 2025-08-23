@@ -63,6 +63,7 @@ export class OrderService {
           description: true,
         },
       },
+      order: { createdAt: 'DESC' },
     });
   }
 
