@@ -1,9 +1,5 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { DataSource, QueryRunner } from 'typeorm';
-import { User } from 'src/user/entities/user/user.entity';
-import { Merchant } from 'src/user/entities/merchant/merchant.entity';
 import { Wallet } from './entities/wallet.entity';
 
 @Injectable()
@@ -12,27 +8,14 @@ export class WalletService {
 
   constructor(private readonly dataSource: DataSource) {}
 
-  async getOrCreate(userId: string) {
+  async getOrCreate(merchantId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const user = await queryRunner.manager.findOne(User, {
-        where: { id: userId },
-        relations: ['merchant'],
-        select: {
-          merchant: { id: true },
-        },
-      });
-
-      if (!user) throw new UnauthorizedException('User not found');
-
-      if (!user.merchant)
-        throw new UnauthorizedException('Please apply as a merchant first');
-
       const wallet = await queryRunner.manager.findOneBy(Wallet, {
-        merchantId: user.merchant.id,
+        merchantId: merchantId,
       });
 
       if (wallet) {
@@ -41,7 +24,7 @@ export class WalletService {
       }
 
       const newWallet = queryRunner.manager.create(Wallet, {
-        merchantId: user.merchant.id,
+        merchantId,
       });
       await queryRunner.commitTransaction();
       return newWallet;
