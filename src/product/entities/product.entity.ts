@@ -13,6 +13,7 @@ import {
 import { ProductCategory, ProductStatus } from '../enums';
 import { CartItem } from 'src/cart/entities/cart-item.entity';
 import { OrderItem } from 'src/order/entities/order-item.entity';
+import { Favorite } from 'src/favorite/entities/favorite.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -68,6 +69,9 @@ export class Product {
   @ManyToOne(() => Merchant, (merchant) => merchant.products)
   @JoinColumn({ name: 'merchantId' })
   merchant: Merchant;
+
+  @OneToMany(() => Favorite, (favorite) => favorite.product)
+  favorites: Favorite[];
 
   @Column()
   merchantId: string;

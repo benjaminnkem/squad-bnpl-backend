@@ -37,7 +37,13 @@ export class OrderController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string, @Request() req) {
-    return this.orderService.findOne(req.user.userId, id);
+    return this.orderService.getOrderById(req.user.userId, id);
+  }
+
+  @Get(':orderId/items')
+  @UseGuards(JwtAuthGuard)
+  getOrderItems(@Param('orderId') orderId: string, @Request() req) {
+    return this.orderService.getOrderItems(req.user.userId, orderId);
   }
 
   // @Patch(':id')

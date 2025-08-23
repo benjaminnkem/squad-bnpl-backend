@@ -18,10 +18,11 @@ import { OrderModule } from './order/order.module';
 import { InstallmentModule } from './installment/installment.module';
 import { InstallmentPlanModule } from './installment-plan/installment-plan.module';
 import { PaymentModule } from './payment/payment.module';
-import { BullModule } from '@nestjs/bullmq';
 import { DeliveryModule } from './delivery/delivery.module';
 import { NotificationModule } from './notification/notification.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
+import { FavoriteModule } from './favorite/favorite.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -68,6 +69,8 @@ import { WarehouseModule } from './warehouse/warehouse.module';
     DeliveryModule,
     NotificationModule,
     WarehouseModule,
+    FavoriteModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
