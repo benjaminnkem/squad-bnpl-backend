@@ -1,11 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { PaymentStatus, WebhookEvent } from '../enums';
 import { SquadService } from './squad.service';
+import { DataSource } from 'typeorm';
+import { Payment } from '../entities/payment.entity';
 
 @Injectable()
 export class WebhookService {
-  constructor(private squadProvider: SquadService) {}
+  private logger: Logger = new Logger(WebhookService.name);
+
+  constructor(
+    private squadProvider: SquadService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   async processSquadWebhook(req: Request) {
     this.squadProvider.verifyWebhookSignal(
@@ -18,22 +25,28 @@ export class WebhookService {
     console.log({ Event, Body });
 
     if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
-      console.log('Charge successful webhook received');
-      // const session = await this.transactionModel.startSession();
-
-      // session.startTransaction();
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
       try {
-        // const transaction = await this.transactionModel
-        //   .findOne({
-        //     transaction_reference: Body.transaction_ref,
-        //   })
-        //   .populate({ path: 'store', populate: 'owner' });
+        const payment = await queryRunner.manager.findOne(Payment, {
+          where: { orderId: Body?.meta?.order_id },
+        });
 
-        // if (!transaction) throw new NotFoundException('Transaction not found');
+        if (!payment) {
+          this.logger.error('Payment not found');
+          throw new NotFoundException('Payment not found');
+        }
 
-        // transaction.status = PaymentStatus.SUCCESSFUL;
-        // await transaction.save({ session });
+        payment.status = PaymentStatus.SUCCESSFUL;
+        payment.paidAt = new Date();
+        payment.paymentMethod =
+          Body?.payment_information.payment_type || 'card';
+
+        await queryRunner.manager.save(payment);
+
+        await queryRunner.commitTransaction();
 
         // await this.walletModel.updateOne(
         //   { store: transaction.store._id },
@@ -43,13 +56,13 @@ export class WebhookService {
         //   { session },
         // );
 
-        // await session.commitTransaction();
-
-        return {
-          msg: 'Webhook ran successfully',
-        };
+        return 'Payment Webhook ran successfully';
       } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error(`Error processing webhook:`, error);
         throw error;
+      } finally {
+        await queryRunner.release();
       }
     }
   }
