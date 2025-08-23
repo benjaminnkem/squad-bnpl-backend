@@ -91,22 +91,22 @@ export class WebhookService {
 
     if (payment.purpose === PaymentPurpose.ORDER_PAYMENT) {
       order.status = OrderStatus.CONFIRMED;
-      await this.walletService.addPayout(
-        order.merchantId,
-        Number(payment.amount),
-        queryRunner,
-      );
+      // await this.walletService.addPayout(
+      //   order.merchantId,
+      //   Number(payment.amount),
+      //   queryRunner,
+      // );
     } else if (payment.purpose === PaymentPurpose.INSTALLMENT_PAYMENT) {
     }
 
     await queryRunner.manager.save(order);
 
-    await queryRunner.manager.increment(
-      Wallet,
-      order?.merchantId,
-      'balance',
-      payment.amount,
-    );
+    // await queryRunner.manager.increment(
+    //   Wallet,
+    //   order?.merchantId,
+    //   'balance',
+    //   payment.amount,
+    // );
 
     const orderItems = await queryRunner.manager.find(OrderItem, {
       where: { orderId: order.id },
