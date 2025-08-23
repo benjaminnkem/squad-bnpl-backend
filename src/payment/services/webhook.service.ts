@@ -11,6 +11,7 @@ import { Wallet } from 'src/wallet/entities/wallet.entity';
 import { formatNaira } from 'src/_lib/helpers/numbers';
 import { format } from 'date-fns';
 import { OrderItem } from 'src/order/entities/order-item.entity';
+import { WalletService } from 'src/wallet/wallet.service';
 
 @Injectable()
 export class WebhookService {
@@ -20,6 +21,7 @@ export class WebhookService {
     private squadProvider: SquadService,
     private readonly dataSource: DataSource,
     private readonly mailerService: MailerService,
+    private readonly walletService: WalletService,
   ) {}
 
   async processSquadWebhook(req: Request) {
@@ -89,6 +91,11 @@ export class WebhookService {
 
     if (payment.purpose === PaymentPurpose.ORDER_PAYMENT) {
       order.status = OrderStatus.CONFIRMED;
+      await this.walletService.addPayout(
+        order.merchantId,
+        Number(payment.amount),
+        queryRunner,
+      );
     } else if (payment.purpose === PaymentPurpose.INSTALLMENT_PAYMENT) {
     }
 

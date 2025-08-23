@@ -6,10 +6,11 @@ import { WebhookService } from './services/webhook.service';
 import { SquadService } from './services/squad.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
+import { WalletService } from 'src/wallet/wallet.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Payment])],
   controllers: [PaymentController, WebhookController],
-  providers: [PaymentService, WebhookService, SquadService],
+  providers: [PaymentService, WebhookService, SquadService, WalletService],
 })
 export class PaymentModule {}
