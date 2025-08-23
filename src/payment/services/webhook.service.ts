@@ -4,6 +4,8 @@ import { PaymentStatus, WebhookEvent } from '../enums';
 import { SquadService } from './squad.service';
 import { DataSource } from 'typeorm';
 import { Payment } from '../entities/payment.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { OrderStatus } from 'src/order/enums';
 
 @Injectable()
 export class WebhookService {
@@ -45,6 +47,18 @@ export class WebhookService {
           Body?.payment_information.payment_type || 'card';
 
         await queryRunner.manager.save(payment);
+
+        const order = await queryRunner.manager.findOne(Order, {
+          where: { id: Body?.meta?.order_id },
+        });
+
+        if (!order) {
+          this.logger.error('Order not found');
+          throw new NotFoundException('Order not found');
+        }
+
+        order.status = OrderStatus.PROCESSING;
+        await queryRunner.manager.save(order);
 
         await queryRunner.commitTransaction();
 
