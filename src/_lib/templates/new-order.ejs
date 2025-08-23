@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #ff4c11 0%, #b027a9 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .header .icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content h2 {
+        color: #333;
+        margin-top: 0;
+      }
+      .order-summary {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+      .order-item:last-child {
+        border-bottom: none;
+      }
+      .item-details {
+        flex: 1;
+      }
+      .item-name {
+        font-weight: bold;
+        color: #333;
+      }
+      .item-description {
+        color: #6c757d;
+        font-size: 14px;
+        margin: 5px 0;
+      }
+      .item-price {
+        font-weight: bold;
+        color: #28a745;
+      }
+      .order-total {
+        background-color: #e7f3ff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .total-amount {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin: 10px 0;
+      }
+      .view-order-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 16px;
+        margin: 25px 0;
+        transition: transform 0.2s ease;
+      }
+      .view-order-button:hover {
+        transform: translateY(-2px);
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 8px 0;
+      }
+      .info-box {
+        background-color: #d1ecf1;
+        border-left: 4px solid #17a2b8;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 0 4px 4px 0;
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 20px 30px;
+        text-align: center;
+        color: #6c757d;
+        font-size: 14px;
+      }
+      .bnpl-notice {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+        font-size: 14px;
+      }
+      .shipping-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="icon">🛍️</div>
+        <h1>Order Confirmed!</h1>
+      </div>
+
+      <div class="content">
+        <h2>Hello <%= customerName %>!</h2>
+        <p>
+          Thank you for your order! We're excited to confirm that your order has been 
+          successfully placed with SmartPay. Here are the details:
+        </p>
+
+        <div class="order-summary">
+          <h3 style="margin-top: 0; color: #333;">Order Details</h3>
+          <div class="detail-row">
+            <span>Order Number:</span>
+            <span><strong><%= orderNumber %></strong></span>
+          </div>
+          <div class="detail-row">
+            <span>Order Date:</span>
+            <span><%= orderDate %></span>
+          </div>
+          <div class="detail-row">
+            <span>Payment Method:</span>
+            <span><%= paymentMethod %></span>
+          </div>
+          <% if (paymentStatus === 'pending') { %>
+          <div class="detail-row">
+            <span>Payment Status:</span>
+            <span style="color: #ffc107;"><strong>Pending (Buy Now, Pay Later)</strong></span>
+          </div>
+          <% } else { %>
+          <div class="detail-row">
+            <span>Payment Status:</span>
+            <span style="color: #28a745;"><strong>Confirmed</strong></span>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="order-summary">
+          <h3 style="margin-top: 0; color: #333;">Items Ordered</h3>
+          <% items.forEach(function(item) { %>
+          <div class="order-item">
+            <div class="item-details">
+              <div class="item-name"><%= item.name %></div>
+              <div class="item-description">Quantity: <%= item.quantity %></div>
+              <% if (item.variant) { %>
+              <div class="item-description">Variant: <%= item.variant %></div>
+              <% } %>
+            </div>
+            <div class="item-price"><%= item.price %></div>
+          </div>
+          <% }); %>
+        </div>
+
+        <div class="order-total">
+          <div style="color: #6c757d; margin-bottom: 5px;">Total Order Amount</div>
+          <div class="total-amount"><%= totalAmount %></div>
+          <% if (paymentMethod === 'BNPL') { %>
+          <div style="color: #856404; font-size: 14px; margin-top: 10px;">
+            Pay in installments - Next payment due: <%= nextPaymentDate %>
+          </div>
+          <% } %>
+        </div>
+
+        <div style="text-align: center">
+          <a href="<%= orderTrackingUrl %>" class="view-order-button">
+            Track Your Order
+          </a>
+        </div>
+
+        <div class="shipping-info">
+          <h3 style="margin-top: 0; color: #333;">Shipping Information</h3>
+          <div class="detail-row">
+            <span>Delivery Address:</span>
+            <span><%= shippingAddress %></span>
+          </div>
+          <div class="detail-row">
+            <span>Estimated Delivery:</span>
+            <span><%= estimatedDelivery %></span>
+          </div>
+          <div class="detail-row">
+            <span>Shipping Method:</span>
+            <span><%= shippingMethod %></span>
+          </div>
+        </div>
+
+        <% if (paymentMethod === 'BNPL') { %>
+        <div class="bnpl-notice">
+          <strong>Buy Now, Pay Later Selected:</strong> Your order is confirmed! 
+          Your first payment of <%= firstPaymentAmount %> is due on <%= nextPaymentDate %>. 
+          We'll send you a reminder before each payment is due.
+        </div>
+        <% } %>
+
+        <div class="info-box">
+          <strong>What happens next?</strong><br />
+          We'll start processing your order right away. You'll receive shipping updates 
+          and tracking information via email as your order progresses.
+        </div>
+
+        <p>
+          If you have any questions about your order, shipping, or need to make changes, 
+          please contact our customer support team as soon as possible.
+        </p>
+
+        <p>Thank you for choosing SmartPay!</p>
+        <p><strong>The SmartPay Team</strong></p>
+      </div>
+
+      <div class="footer">
+        <p>This email was sent to <strong><%= email %></strong></p>
+        <p>
+          Order placed on <%= orderDate %> | Order #<%= orderNumber %>
+        </p>
+        <p>
+          &copy; <%= new Date().getFullYear() %> SmartPay. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -15,6 +15,7 @@ import { Cart } from 'src/cart/entities/cart.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { UserStatus } from 'src/user/enums';
 import { Favorite } from 'src/favorite/entities/favorite.entity';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
 
 @Entity({ name: 'users' })
 export class User {

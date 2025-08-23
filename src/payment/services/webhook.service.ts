@@ -1,11 +1,16 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
-import { PaymentStatus, WebhookEvent } from '../enums';
+import { PaymentPurpose, PaymentStatus, WebhookEvent } from '../enums';
 import { SquadService } from './squad.service';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { Payment } from '../entities/payment.entity';
 import { Order } from 'src/order/entities/order.entity';
 import { OrderStatus } from 'src/order/enums';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
+import { formatNaira } from 'src/_lib/helpers/numbers';
+import { format } from 'date-fns';
+import { OrderItem } from 'src/order/entities/order-item.entity';
 
 @Injectable()
 export class WebhookService {
@@ -14,68 +19,159 @@ export class WebhookService {
   constructor(
     private squadProvider: SquadService,
     private readonly dataSource: DataSource,
+    private readonly mailerService: MailerService,
   ) {}
 
   async processSquadWebhook(req: Request) {
-    this.squadProvider.verifyWebhookSignal(
-      <string>req.headers['x-squad-encrypted-body'],
-      req.body,
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      this.squadProvider.verifyWebhookSignal(
+        <string>req.headers['x-squad-encrypted-body'],
+        req.body,
+      );
+
+      const { Event, Body } = req.body;
+
+      const { gateway_ref, meta, transaction_status } = Body;
+
+      const paymentStatus =
+        transaction_status === 'success'
+          ? PaymentStatus.SUCCESSFUL
+          : PaymentStatus.FAILED;
+
+      const payment = await queryRunner.manager.findOne(Payment, {
+        where: { orderId: meta?.order_id },
+      });
+
+      if (!payment) {
+        this.logger.error('Payment not found');
+        throw new NotFoundException('Payment not found');
+      }
+
+      payment.status = paymentStatus;
+      payment.paidAt = new Date();
+      payment.paymentMethod = Body?.payment_information.payment_type || 'card';
+      payment.gatewayReference = gateway_ref;
+      payment.gatewayResponse = JSON.stringify(Body);
+
+      await queryRunner.manager.save(payment);
+
+      if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
+        await this.handleSuccessfulPayment(queryRunner, payment);
+      } else {
+        this.handleFailedPayment(queryRunner, payment);
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(`Error processing webhook:`, error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async handleSuccessfulPayment(queryRunner: QueryRunner, payment: Payment) {
+    const order = await queryRunner.manager.findOne(Order, {
+      where: { id: payment.orderId },
+      relations: ['user'],
+      select: { user: { email: true, firstName: true } },
+    });
+
+    if (!order) {
+      this.logger.error('Order not found');
+      throw new NotFoundException('Order not found');
+    }
+
+    if (payment.purpose === PaymentPurpose.ORDER_PAYMENT) {
+      order.status = OrderStatus.CONFIRMED;
+    } else if (payment.purpose === PaymentPurpose.INSTALLMENT_PAYMENT) {
+    }
+
+    await queryRunner.manager.save(order);
+
+    await queryRunner.manager.increment(
+      Wallet,
+      order?.merchantId,
+      'balance',
+      payment.amount,
     );
 
-    const { Event, Body } = req.body;
+    const orderItems = await queryRunner.manager.find(OrderItem, {
+      where: { orderId: order.id },
+      relations: ['product'],
+      select: { product: { name: true } },
+    });
 
-    if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+    await this.mailerService
+      .sendMail({
+        to: order.user.email,
+        subject: 'Payment Confirmed',
+        template: 'payment-success',
+        context: {
+          firstName: order.user.firstName,
+          email: order.user.email,
+          amount: formatNaira(payment.amount),
+          paymentMethod: payment.paymentMethod,
+          orderNumber: order.orderNumber,
+          paymentDate: format(new Date(`${payment.paidAt}`), 'MMMM dd, yyyy'),
+          paymentRef: payment.reference,
+          items: orderItems.map((item) => ({
+            name: item.product.name,
+            quantity: item.quantity,
+          })),
+        },
+      })
+      .catch((error) => {
+        this.logger.error(
+          `Failed to send payment success email: ${error.message}`,
+        );
 
-      try {
-        const payment = await queryRunner.manager.findOne(Payment, {
-          where: { orderId: Body?.meta?.order_id },
-        });
+        // I might need to send logs to admin
+      });
+  }
 
-        if (!payment) {
-          this.logger.error('Payment not found');
-          throw new NotFoundException('Payment not found');
-        }
+  async handleFailedPayment(queryRunner: QueryRunner, payment: Payment) {
+    const order = await queryRunner.manager.findOne(Order, {
+      where: { id: payment.orderId },
+      relations: ['user'],
+      select: { user: { email: true, firstName: true } },
+    });
 
-        payment.status = PaymentStatus.SUCCESSFUL;
-        payment.paidAt = new Date();
-        payment.paymentMethod =
-          Body?.payment_information.payment_type || 'card';
-
-        await queryRunner.manager.save(payment);
-
-        const order = await queryRunner.manager.findOne(Order, {
-          where: { id: Body?.meta?.order_id },
-        });
-
-        if (!order) {
-          this.logger.error('Order not found');
-          throw new NotFoundException('Order not found');
-        }
-
-        order.status = OrderStatus.PROCESSING;
-        await queryRunner.manager.save(order);
-
-        await queryRunner.commitTransaction();
-
-        // await this.walletModel.updateOne(
-        //   { store: transaction.store._id },
-        //   {
-        //     $inc: { balance: transaction.amount },
-        //   },
-        //   { session },
-        // );
-
-        return 'Payment Webhook ran successfully';
-      } catch (error) {
-        await queryRunner.rollbackTransaction();
-        this.logger.error(`Error processing webhook:`, error);
-        throw error;
-      } finally {
-        await queryRunner.release();
-      }
+    if (!order) {
+      this.logger.error('Order not found');
+      throw new NotFoundException('Order not found');
     }
+
+    const orderItems = await queryRunner.manager.find(OrderItem, {
+      where: { orderId: order.id },
+      relations: ['product'],
+      select: { product: { name: true } },
+    });
+
+    await this.mailerService.sendMail({
+      to: order.user.email,
+      subject: 'Payment Failed',
+      template: 'payment-failed',
+      context: {
+        firstName: order.user.firstName,
+        orderNumber: order.orderNumber,
+        attemptDate: format(new Date(`${payment.paidAt}`), 'MMMM dd, yyyy'),
+        email: order.user.email,
+        amount: formatNaira(payment.amount),
+        paymentMethod: payment.paymentMethod,
+        paymentDate: format(new Date(`${payment.paidAt}`), 'MMMM dd, yyyy'),
+        paymentRef: payment.reference,
+        items: orderItems.map((item) => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: formatNaira(item.unitPrice),
+        })),
+      },
+    });
   }
 }

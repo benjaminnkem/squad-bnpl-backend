@@ -23,6 +23,7 @@ import { NotificationModule } from './notification/notification.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { ChatModule } from './chat/chat.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ChatModule } from './chat/chat.module';
     WarehouseModule,
     FavoriteModule,
     ChatModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],

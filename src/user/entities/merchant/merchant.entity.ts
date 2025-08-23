@@ -10,6 +10,7 @@ import { User } from '../user/user.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { MerchantStatus, MerchantTier } from 'src/user/enums';
 import { Order } from 'src/order/entities/order.entity';
+import { Wallet } from 'src/wallet/entities/wallet.entity';
 
 @Entity({ name: 'merchants' })
 export class Merchant {
@@ -45,6 +46,9 @@ export class Merchant {
 
   @Column({ nullable: true })
   website?: string;
+
+  @OneToOne(() => Wallet, (wallet) => wallet.merchant)
+  wallet: Wallet;
 
   @Column({
     type: 'enum',

@@ -60,7 +60,7 @@ export class AuthService {
       await this.mailerService
         .sendMail({
           to: createUserDto.email,
-          subject: 'Welcome to SquadBay',
+          subject: 'Welcome to SmartPay',
           template: 'verify-email',
           context: {
             otp,
@@ -172,7 +172,7 @@ export class AuthService {
 
       await this.mailerService.sendMail({
         to: user.email,
-        subject: 'Forgot Password - SquadBay',
+        subject: 'Forgot Password - SmartPay',
         template: 'forgot-password',
         context: {
           otp,
@@ -224,7 +224,7 @@ export class AuthService {
 
       await this.mailerService.sendMail({
         to: user.email,
-        subject: 'Resend OTP - SquadBay',
+        subject: 'Resend OTP - SmartPay',
         template: 'verify-email',
         context: {
           otp,
