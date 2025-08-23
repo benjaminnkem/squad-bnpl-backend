@@ -348,7 +348,7 @@ export class CartService {
     });
 
     const totalAmount = cartItems.reduce(
-      (sum, item) => sum + item.totalPrice,
+      (sum, item) => sum + Number(item.totalPrice),
       0,
     );
 
