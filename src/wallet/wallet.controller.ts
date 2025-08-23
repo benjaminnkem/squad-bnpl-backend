@@ -20,6 +20,6 @@ export class WalletController {
   @UseGuards(JwtAuthGuard)
   create(@Request() req) {
     const userId = req.user.userId;
-    return this.walletService.getOrCreate(userId);
+    return this.walletService.getOrCreate('');
   }
 }

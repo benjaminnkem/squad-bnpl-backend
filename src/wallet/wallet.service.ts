@@ -1,37 +1,50 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { DataSource, QueryRunner } from 'typeorm';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { QueryRunner, Repository } from 'typeorm';
 import { Wallet } from './entities/wallet.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Merchant } from 'src/user/entities/merchant/merchant.entity';
 
 @Injectable()
 export class WalletService {
   private readonly logger: Logger = new Logger(WalletService.name);
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
+    @InjectRepository(Merchant)
+    private readonly merchantRepository: Repository<Merchant>,
+  ) {}
 
   async getOrCreate(merchantId: string) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     try {
-      const wallet = await queryRunner.manager.findOneBy(Wallet, {
+      const wallet = await this.walletRepository.findOneBy({
         merchantId: merchantId,
       });
 
-      if (wallet) {
-        await queryRunner.commitTransaction();
-        return wallet;
-      }
+      if (wallet) return wallet;
 
-      const newWallet = queryRunner.manager.create(Wallet, {
-        merchantId,
+      const merchant = await this.merchantRepository.findOneBy({
+        id: merchantId,
       });
-      await queryRunner.commitTransaction();
+
+      if (!merchant) throw new BadRequestException('Merchant not found');
+
+      const newWallet = this.walletRepository.create({
+        merchantId,
+        merchant,
+      });
+
+      await this.walletRepository.save(newWallet);
+
       return newWallet;
-    } catch {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    } catch (error) {
+      this.logger.error('Error creating wallet');
+      throw new BadRequestException(error.message || 'Error creating wallet');
     }
   }
 
