@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('order')
 export class OrderController {
@@ -25,18 +28,25 @@ export class OrderController {
     return this.orderService.findAll();
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  getMyOrders(@Request() req) {
+    return this.orderService.getMyOrders(req.user.userId);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.orderService.findOne(req.user.userId, id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(id, updateOrderDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+  //   return this.orderService.update(id, updateOrderDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.orderService.remove(id);
+  // }
 }
