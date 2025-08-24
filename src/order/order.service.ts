@@ -24,7 +24,7 @@ export class OrderService {
   async getMyOrders(userId: string) {
     return await this.orderRepository.find({
       where: { userId },
-      relations: ['merchant'],
+      relations: ['merchant', 'items.product'],
       select: {
         merchant: { id: true, businessName: true, photo: true },
       },

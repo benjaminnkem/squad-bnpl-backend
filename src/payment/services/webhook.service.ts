@@ -39,8 +39,6 @@ export class WebhookService {
 
       const { gateway_ref, meta, transaction_status } = Body;
 
-      console.log({ Body });
-
       const paymentStatus =
         transaction_status === 'success'
           ? PaymentStatus.SUCCESSFUL
