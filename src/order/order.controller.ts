@@ -8,10 +8,12 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { OrderStatus } from './enums';
 
 @Controller('order')
 export class OrderController {
@@ -29,8 +31,11 @@ export class OrderController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  getMyOrders(@Request() req) {
-    return this.orderService.getMyOrders(req.user.userId);
+  getMyOrders(@Request() req, @Query('status') status?: OrderStatus) {
+    return this.orderService.getMyOrders(
+      req.user.userId,
+      status?.toLocaleLowerCase() === 'all' ? undefined : status,
+    );
   }
 
   @Get(':id')

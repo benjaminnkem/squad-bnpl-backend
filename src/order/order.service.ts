@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { DataSource, Repository } from 'typeorm';
 import { OrderItem } from './entities/order-item.entity';
+import { OrderStatus } from './enums';
 
 @Injectable()
 export class OrderService {
@@ -21,9 +22,9 @@ export class OrderService {
     return this.orderRepository.save(order);
   }
 
-  async getMyOrders(userId: string) {
+  async getMyOrders(userId: string, status?: OrderStatus) {
     return await this.orderRepository.find({
-      where: { userId },
+      where: { userId, status },
       relations: ['merchant', 'items.product'],
       select: {
         merchant: { id: true, businessName: true, photo: true },

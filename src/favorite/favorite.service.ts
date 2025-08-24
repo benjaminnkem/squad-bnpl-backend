@@ -30,6 +30,7 @@ export class FavoriteService {
           price: true,
           description: true,
           images: true,
+          category: true,
         },
       },
     });
