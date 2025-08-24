@@ -63,8 +63,10 @@ export class WebhookService {
 
       if (Event === WebhookEvent.CHARGE_SUCCESSFUL) {
         await this.handleSuccessfulPayment(queryRunner, payment);
+        this.logger.log('Payment successful webhook processed');
       } else {
         this.handleFailedPayment(queryRunner, payment);
+        this.logger.log('Payment failed webhook processed');
       }
 
       await queryRunner.commitTransaction();
@@ -79,9 +81,15 @@ export class WebhookService {
 
   async handleSuccessfulPayment(queryRunner: QueryRunner, payment: Payment) {
     const order = await queryRunner.manager.findOne(Order, {
-      where: { id: payment.orderId },
+      where: { id: payment.orderId, status: OrderStatus.PENDING },
       relations: ['user'],
       select: { user: { email: true, firstName: true } },
+    });
+
+    console.log({
+      orderId: order?.id,
+      paymentId: payment.id,
+      paymentOrderId: payment.orderId,
     });
 
     if (!order) {
@@ -144,7 +152,7 @@ export class WebhookService {
 
   async handleFailedPayment(queryRunner: QueryRunner, payment: Payment) {
     const order = await queryRunner.manager.findOne(Order, {
-      where: { id: payment.orderId },
+      where: { id: payment.orderId, status: OrderStatus.PENDING },
       relations: ['user'],
       select: { user: { email: true, firstName: true } },
     });
