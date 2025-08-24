@@ -47,7 +47,7 @@ export class WebhookService {
           : PaymentStatus.FAILED;
 
       const payment = await queryRunner.manager.findOne(Payment, {
-        where: { orderId: meta?.order_id },
+        where: { orderId: meta?.orderId },
       });
 
       if (!payment) {
@@ -83,7 +83,7 @@ export class WebhookService {
 
   async handleSuccessfulPayment(queryRunner: QueryRunner, payment: Payment) {
     const order = await queryRunner.manager.findOne(Order, {
-      where: { id: payment.orderId, status: OrderStatus.PENDING },
+      where: { id: payment.orderId },
       relations: ['user'],
       select: { user: { email: true, firstName: true } },
     });
@@ -148,7 +148,7 @@ export class WebhookService {
 
   async handleFailedPayment(queryRunner: QueryRunner, payment: Payment) {
     const order = await queryRunner.manager.findOne(Order, {
-      where: { id: payment.orderId, status: OrderStatus.PENDING },
+      where: { id: payment.orderId },
       relations: ['user'],
       select: { user: { email: true, firstName: true } },
     });
