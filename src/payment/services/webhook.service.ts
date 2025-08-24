@@ -39,6 +39,8 @@ export class WebhookService {
 
       const { gateway_ref, meta, transaction_status } = Body;
 
+      console.log({ Body });
+
       const paymentStatus =
         transaction_status === 'success'
           ? PaymentStatus.SUCCESSFUL
@@ -84,12 +86,6 @@ export class WebhookService {
       where: { id: payment.orderId, status: OrderStatus.PENDING },
       relations: ['user'],
       select: { user: { email: true, firstName: true } },
-    });
-
-    console.log({
-      orderId: order?.id,
-      paymentId: payment.id,
-      paymentOrderId: payment.orderId,
     });
 
     if (!order) {
