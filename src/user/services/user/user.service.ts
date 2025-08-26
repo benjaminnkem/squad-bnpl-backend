@@ -22,7 +22,7 @@ export class UserService {
   }
 
   async getUserInfo(userId: string) {
-    return await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['merchant'],
       select: {
@@ -33,6 +33,10 @@ export class UserService {
         },
       },
     });
+
+    console.log({ user });
+
+    return user;
   }
 
   findOne(id: string) {
