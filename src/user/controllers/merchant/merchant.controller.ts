@@ -24,14 +24,14 @@ export class MerchantController {
     @Request() req,
     @Body() createMerchantDto: CreateMerchantDto,
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.merchantService.becomeAMerchant(userId, createMerchantDto);
   }
 
   @Get('profile')
   @UseGuards(AuthGuard)
   async getMerchantProfile(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.merchantService.getMerchantProfile(userId);
   }
 
@@ -55,7 +55,7 @@ export class MerchantController {
     @Request() req,
     @Body() updateProfileDto: UpdateMerchantDto,
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.merchantService.updateProfile(userId, updateProfileDto);
   }
 }
